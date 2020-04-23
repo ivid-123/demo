@@ -14,7 +14,6 @@ pipeline {
         sh 'npm --version'
         sh  'which node'
         sh 'whereis node'
-        sh 'java --version'
         sh 'npm install'
        
 
