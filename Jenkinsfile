@@ -15,10 +15,9 @@ pipeline {
         sh  'which node'
         sh 'whereis node'
         sh 'pwd'
-        sh 'sudo -i'
         sh 'cd /root/usr/bin/node'
         sh 'pwd'
-        sh 'sudo npm install'
+        sh 'npm install'
        
 
         echo 'Install completed..............'
