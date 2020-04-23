@@ -14,7 +14,8 @@ pipeline {
         sh 'npm --version'
         sh  'which node'
         sh 'whereis node'
-        sh 'yarn version'
+        sh 'which yarn'
+        sh 'yarn --version'
         sh 'yarn install'
        
 
