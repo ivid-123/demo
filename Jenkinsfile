@@ -14,7 +14,7 @@ pipeline {
         sh 'npm --version'
         sh  'which node'
         sh 'whereis node'
-        sh 'sudo npm install'
+        sh 'npm install'
        
 
         echo 'Install completed..............'
