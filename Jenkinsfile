@@ -1,3 +1,4 @@
+
 pipeline {
   agent {
     node {
@@ -8,15 +9,13 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        echo 'Building..............changed again new changes again'
-        echo 'Waiting 5 minutes for deployment to complete prior starting smoke testing'
-        echo 'New pull request changes'
+        sh '#!/bin/sh'
         sh 'node --version'
         sh 'npm --version'
         sh  'which node'
         sh 'whereis node'
         sh 'npm config ls'
-        //sh '/opt/rh/rh-nodejs8/root/usr/bin/node  '
+        sh 'npm install'
        
 
         echo 'Install completed..............'
