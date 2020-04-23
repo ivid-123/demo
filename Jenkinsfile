@@ -14,9 +14,7 @@ pipeline {
         sh 'npm --version'
         sh  'which node'
         sh 'whereis node'
-        sh 'which yarn'
-        sh 'yarn --version'
-        sh 'yarn install'
+        sh 'npm install -g'
        
 
         echo 'Install completed..............'
