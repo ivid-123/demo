@@ -14,7 +14,7 @@ pipeline {
         sh 'node --version'
         sh 'npm --version'
         sh '''which node
-which nodejs'''
+/opt/rh/rh-nodejs8/root/usr/bin/node npm install'''
         echo 'Install completed..............'
         sh 'npm run build'
         echo 'Build completed'
