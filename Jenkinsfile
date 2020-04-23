@@ -13,8 +13,11 @@ pipeline {
         echo 'New pull request changes'
         sh 'node --version'
         sh 'npm --version'
-        sh '''which node
-/opt/rh/rh-nodejs8/root/usr/bin npm install'''
+        sh  'which node'
+        sh 'whereis node'
+        sh '/opt/rh/rh-nodejs8/root/usr/bin/node npm install'
+        sh '/usr/local/bin/npm install'
+
         echo 'Install completed..............'
         sh 'npm run build'
         echo 'Build completed'
