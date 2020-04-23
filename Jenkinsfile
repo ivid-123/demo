@@ -14,7 +14,7 @@ pipeline {
                 echo 'New pull request changes'
                 sh 'node --version'
                 sh 'npm --version'
-                sh 'npm install'
+                sh '/root/.nvm/versions/node/v8.16.1/bin/npm install'
                 echo 'Install completed..............'
                 sh 'npm run build'
                 echo 'Build completed'
