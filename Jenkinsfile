@@ -15,7 +15,7 @@ pipeline {
         sh 'npm --version'
         sh  'which node'
         sh 'whereis node'
-        sh '/opt/rh/rh-nodejs8/root/usr/bin/node npm install'
+        sh '/opt/rh/rh-nodejs8/root/usr/bin npm install'
         sh '/usr/local/bin/npm install'
 
         echo 'Install completed..............'
