@@ -9,17 +9,17 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        npm --version
-        npm install
+        // npm --version
+        // npm install
         // sh '#!/bin/sh'
-        // sh 'node --version'
-        // sh 'npm --version'
+        sh 'node --version'
+        sh 'npm --version'
         // sh  'which node'
         // sh 'whereis node'
         // sh 'pwd'
         // sh 'cd /root/usr/bin/node'
         // sh 'pwd'
-        // sh 'npm install'
+        sh 'npm install'
        
 
         echo 'Install completed..............'
