@@ -15,8 +15,8 @@ pipeline {
         }
         stage('Quality Analysis') {
             steps {
-                sh './src/jenkins/scripts/quality/lint.sh'
-                sh './src/jenkins/scripts/quality/sonar.sh'
+                sh 'bash ./src/jenkins/scripts/quality/lint.sh'
+                sh 'bash ./src/jenkins/scripts/quality/sonar.sh'
             }
         }
         stage('Unit Test') {
@@ -24,13 +24,13 @@ pipeline {
                 branch 'development'
             }
             steps {
-                sh './src/jenkins/scripts/test.sh'
+                sh 'bash ./src/jenkins/scripts/test.sh'
             }
         }
 
         stage('Build') {
             steps {
-                sh './src/jenkins/scripts/build.sh'
+                sh 'bash ./src/jenkins/scripts/build.sh'
                 echo 'a versioned package for your the artifacts repository'
             }
         }
@@ -44,7 +44,7 @@ pipeline {
                 branch 'development'
             }
             steps {
-                sh './src/jenkins/scripts/deliver-for-development.sh'
+                sh 'bash ./src/jenkins/scripts/deliver-for-development.sh'
             }
         }
         stage('Deploy on Stage') {
@@ -52,9 +52,9 @@ pipeline {
                 branch 'stage'
             }
             steps {
-                sh '../src/jenkins/scripts/deploy-for-production.sh'
+                sh 'bash ./src/jenkins/scripts/deploy-for-production.sh'
                 input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                sh '../src/jenkins/scripts/kill.sh'
+                sh 'bash ./src/jenkins/scripts/kill.sh'
 
             }
         }
@@ -63,9 +63,9 @@ pipeline {
                 branch 'production'
             }
             steps {
-                sh './src/jenkins/scripts/deploy-for-production.sh'
+                sh 'bash ./src/jenkins/scripts/deploy-for-production.sh'
                 input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                sh './src/jenkins/scripts/kill.sh'
+                sh 'bash ./src/jenkins/scripts/kill.sh'
             }
         }
         stage('Integration Testing') {
