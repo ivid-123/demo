@@ -31,12 +31,12 @@ pipeline {
         stage('Build') {
             steps {
                 sh './jenkins/scripts/build.sh'
-                echo: 'a versioned package for your the artifacts repository'
+                echo 'a versioned package for your the artifacts repository'
             }
         }
         stage('package') {
             steps {
-                echo: 'apply configuration of specific enviorment and does versioning of build images then made it available for the artifacts repository'
+                echo 'apply configuration of specific enviorment and does versioning of build images then made it available for the artifacts repository'
             }
         }
         stage('Deploy on Dev') {
