@@ -16,8 +16,6 @@ pipeline {
         stage('Quality Analysis') {
             steps {
                 sh './jenkins/scripts/quality/lint.sh'
-            }
-            steps {
                 sh './jenkins/scripts/quality/sonar.sh'
             }
         }
@@ -85,12 +83,12 @@ pipeline {
             }
         }
     }
-    // post {
-    //     always {
-    //         step([$class: 'Mailer',
-    //             notifyEveryUnstableBuild: true,
-    //             recipients: "ashish.mishra2@soprasteria.com",
-    //             sendToIndividuals: true])
-    //     }
-    // }
+    post {
+        always {
+            step([$class: 'Mailer',
+                notifyEveryUnstableBuild: true,
+                recipients: "ashish.mishra2@soprasteria.com",
+                sendToIndividuals: true])
+        }
+    }
 }
