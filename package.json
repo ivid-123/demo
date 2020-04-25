@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "test": "ng test",
+    "test": "ng test --karmaConfig=src/karma.conf.js",
+    "test:dev": "ng test --watch --karmaConfig=src/karma.dev.conf.js",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
