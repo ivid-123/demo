@@ -76,6 +76,14 @@ pipeline {
                 sh 'bash ./src/jenkins/scripts/deliver-for-development.sh'
             }
         }
+        stage('Integration Testing') {
+            when {
+                branch 'stage'
+            }
+            steps {
+                echo 'run end to end tests.'
+            }
+        }
         stage('Deploy on Stage') {
             when {
                 branch 'stage'
@@ -97,21 +105,7 @@ pipeline {
                 sh 'bash ./src/jenkins/scripts/kill.sh'
             }
         }
-        stage('Integration Testing') {
-            when {
-                branch 'stage'
-            }
-            steps {
-                echo 'run end to end tests.'
-            }
-        }
-        stage('Tag') {
-            steps {
-                script {
-                    echo 'create tags on stage build images'
-                }
-            }
-        }
+        
     }
     post {
         always {
