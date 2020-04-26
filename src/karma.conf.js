@@ -36,7 +36,7 @@ module.exports = function (config) {
         ]
       }
     },
-    browsers: ['ChromeHeadless'],
+    browsers: ['Chrome', 'ChromeHeadless', 'MyHeadlessChrome'],
     singleRun: true,
     restartOnFileChange: true
   });
