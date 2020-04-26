@@ -12,7 +12,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'npm run-script build'
+                sh 'npm build'
             }
         }
         stage('Test') {
@@ -22,8 +22,9 @@ pipeline {
         }        
         stage('Deploy') {
             steps {
-                sh 'rm ../../apps/*'
-                sh 'cp ./dist/apps/* ../../apps/'
+                echo 'deploying..'
+                // sh 'rm ../../apps/*'
+                // sh 'cp ./dist/apps/* ../../apps/'
             }
         }             
     }
