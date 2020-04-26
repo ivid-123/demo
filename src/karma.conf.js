@@ -7,8 +7,7 @@ module.exports = function (config) {
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-jasmine'),
-      // require('karma-chrome-launcher'),  /*comment out this line to disable the karma-chrome-launcher*/
-      require('karma-phantomjs-launcher'),  /* add this line to disable the karma-phantomjs-launcher*/
+      require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter'),
       require('@angular-devkit/build-angular/plugins/karma')
@@ -17,17 +16,23 @@ module.exports = function (config) {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
     coverageIstanbulReporter: {
-      dir: require('path').join(__dirname, '../coverage/letslearn'),
+      dir: require('path').join(__dirname, '../coverage/apptest01'),
       reports: ['html', 'lcovonly', 'text-summary'],
       fixWebpackSourcePaths: true
     },
-    reporters: ['progress', 'kjhtml'],
+    customLaunchers: {
+        MyHeadlessChrome: {
+            base: 'ChromeHeadless',
+            flags: ['--disable-translate', '--disable-extensions', '--disable-web-security', '--remote-debugging-port=9223']
+        }
+    },
+    reporters: ['progress'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
-    browsers: ['PhantomJS'], /*remove chrome and replace it with PhantomJS */
-    singleRun: true,  /*make it true to run test suits only one time*/
+    autoWatch: false,
+    browsers: ['MyHeadlessChrome'],
+    singleRun: true,
     restartOnFileChange: true
   });
 };
