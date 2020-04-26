@@ -7,17 +7,17 @@ pipeline {
     stages {
         stage('Restore') {
             steps {
-                sh 'npm install'
+                sh 'npm run install'
             }
         }
         stage('Build') {
             steps {
-                sh 'npm build'
+                sh 'npm run ng build'
             }
         }
         stage('Test') {
             steps {
-                sh 'ng test'
+                sh 'npm run ng test'
             }
         }        
         stage('Deploy') {
