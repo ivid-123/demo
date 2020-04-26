@@ -10,6 +10,8 @@ pipeline {
         EXECUTE_VALID_PRETTIER_STAGE = "true"
         EXECUTE_VALID_TSLINT_STAGE = "true"
         EXECUTE_TEST_STAGE = "true"
+        EXECUTE_TAG_STAGE = "true"
+        EXECUTE_BUILD_STAGE = "true"
     }
 
     stages {
