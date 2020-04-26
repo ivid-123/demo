@@ -16,6 +16,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 // required to run unit test using phontonjs 
+                sh 'npm install chrome -g'
                 sh 'npm install'
             }
         }
