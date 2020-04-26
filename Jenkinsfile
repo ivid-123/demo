@@ -59,16 +59,63 @@ pipeline {
                 }
             }
         }
-        stage('Build Image') {
-            steps {
-                //sh 'bash ./src/jenkins/scripts/build.sh'
-                sh 'npm build --prod'
-                echo 'a versioned package for your the artifacts repository'
+        // stage('Build Image') {
+        //     steps {
+        //         //sh 'bash ./src/jenkins/scripts/build.sh'
+        //         sh 'npm build --prod'
+        //         echo 'a versioned package for your the artifacts repository'
+        //     }
+        // }
+        // ------------------------------------
+        // -- STAGE: build
+        // ------------------------------------
+        stage('build') {
+            when {
+                environment name: "EXECUTE_BUILD_STAGE", value: "true"
+            }
+
+            steps{
+                script{
+                    echo 'Build Stage - Creating builder image'
+                    openshiftBuild(
+                        bldCfg: "${SPA_NAME}-builder",
+                        showBuildLogs: "true",
+                        verbose: "true",
+                        waitTime: "1800000"
+                    )
+
+                    echo 'Build Stage - Creating runtime image'
+                    openshiftBuild(
+                        bldCfg: "${SPA_NAME}-runtime",
+                        showBuildLogs: "true",
+                        verbose: "true"
+                    )
+
+                    currentBuild.result = 'SUCCESS'
+                }
             }
         }
-        stage('Tag') {
-            steps {
-                echo 'apply configuration of specific enviorment and does versioning of build images then made it available for the artifacts repository'
+        // ------------------------------------
+        // -- STAGE: tag
+        // ------------------------------------
+        stage('tag') {
+            when {
+                environment name: "EXECUTE_TAG_STAGE", value: "true"
+            }
+
+            steps{
+                script{
+                    echo 'Tag Stage - Tagging current image'
+                    openshiftTag(
+                        srcStream: "${SPA_NAME}-builder",
+                        srcTag: "latest",
+                        destStream: "${SPA_NAME}-builder",
+                        destTag: "${DEV_TAG}",
+                        verbose: "true"
+                    )
+
+                    currentBuild.result = 'SUCCESS'
+                }
             }
         }
         stage('Deploy on Dev') {
@@ -108,7 +155,7 @@ pipeline {
                 sh 'bash ./src/jenkins/scripts/kill.sh'
             }
         }
-        
+
     }
     post {
         always {
