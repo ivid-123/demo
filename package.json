@@ -8,7 +8,25 @@
     "test": "ng test --karmaConfig=src/karma.conf.js",
     "test:dev": "ng test --watch --karmaConfig=src/karma.dev.conf.js",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "prettier:check": "prettier --list-different \"src/**/*.ts\"",
+    "stylelint": "stylelint \"src/**/*.css\""
+  },
+  "lint-staged": {
+    "*.scss": [
+      "node_modules/.bin/prettier --write --config .prettierrc",
+      "stylelint",
+      "git add"
+    ],
+    "*.ts": [
+      "node_modules/.bin/prettier --write --config .prettierrc",
+      "tslint",
+      "git add"
+    ],
+    "*.html": [
+      "node_modules/.bin/js-beautify -r",
+      "git add"
+    ]
   },
   "private": true,
   "dependencies": {
@@ -30,10 +48,13 @@
     "@angular/cli": "~7.3.9",
     "@angular/compiler-cli": "~7.2.0",
     "@angular/language-service": "~7.2.0",
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
     "codelyzer": "~4.5.0",
+    "husky": "^4.2.5",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.0.0",
@@ -41,10 +62,13 @@
     "karma-coverage-istanbul-reporter": "~2.0.1",
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "prettier": "^2.0.5",
+    "prettify-xml": "^1.2.0",
     "protractor": "~5.4.0",
     "surge": "^0.21.3",
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "~3.2.2"
   }
 }
