@@ -15,7 +15,8 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-                sh 'sudo yum install fontconfig freetype freetype-devel fontconfig-devel libstdc++'
+                // required to run unit test using phontonjs 
+                sh 'yum install fontconfig freetype freetype-devel fontconfig-devel libstdc++'
                 sh 'npm install'
             }
         }
