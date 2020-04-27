@@ -23,7 +23,7 @@ pipeline {
                 //sh 'npm install phantomjs-prebuilt -g --ddd'
                 //sh 'npm install phantomjs-prebuilt@2.1.14 --ignore-scripts'
                 //sh 'which chrome'
-                sh 'npm install --ignore-scripts'
+                sh 'npm install'
             }
         }
         stage('validation'){
@@ -58,7 +58,7 @@ pipeline {
                     steps{
                         script{
                             echo 'Test Stage - Launching unit tests'
-                            sh 'npm run test'
+                            sh 'npm run test:phantom'
                         }
                     }
                 }
