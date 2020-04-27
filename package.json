@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "test:phantom": "ng test --karmaConfig=src/karma.phantom.conf.js",
+    "test:phantom": "ng test",
     "test:dev": "ng test --watch --karmaConfig=src/karma.dev.conf.js",
     "test:puppeteer": "ng test --karmaConfig=src/karma.puppeteer.conf.js",
     "test": "ng test --karmaConfig=src/karma.conf.js",

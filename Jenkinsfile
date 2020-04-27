@@ -61,17 +61,6 @@ pipeline {
                         }
                     }
                 }
-                stage('test:puppeteer'){
-                    when {
-                        environment name: "EXECUTE_TEST_STAGE", value: "true"
-                    }
-                    steps{
-                        script{
-                            echo 'Test Stage - Launching unit tests'
-                            sh 'npm run test:puppeteer'
-                        }
-                    }
-                }
             }
         }
         // stage('Build Image') {
