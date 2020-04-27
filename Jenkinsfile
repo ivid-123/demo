@@ -20,7 +20,7 @@ pipeline {
                 // required to run unit test using phontonjs 
                 //sh 'npm install chrome -g'
                 //sh 'which chrome'
-                sh 'npm install phantomjs-prebuilt -g --ddd'
+                //sh 'npm install phantomjs-prebuilt -g --ddd'
                 sh 'npm install'
             }
         }
