@@ -8,7 +8,7 @@
     "test:phantom": "ng test",
     "test:dev": "ng test --watch --karmaConfig=src/karma.dev.conf.js",
     "test:puppeteer": "ng test --karmaConfig=src/karma.puppeteer.conf.js",
-    "test": "ng test --karmaConfig=src/karma.conf.js",
+    "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "prettier:check": "prettier --list-different \"src/**/*.ts\"",
