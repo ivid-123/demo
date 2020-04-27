@@ -55,7 +55,7 @@ pipeline {
                     steps{
                         script{
                             echo 'Test Stage - Launching unit tests'
-                            sh 'npm run test'
+                            sh 'npm run test:phantom'
                         }
                     }
                 }
