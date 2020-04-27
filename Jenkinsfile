@@ -36,7 +36,7 @@ pipeline {
                     }
                     steps{
                         echo 'Validation Stage - prettier'
-                        //sh 'npm run prettier:check'
+                        /// sh 'npm run prettier:check'
                     }
                 }
                 stage('Tslint'){
