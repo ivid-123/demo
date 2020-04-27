@@ -1,7 +1,7 @@
 pipeline {
     agent {
         node {
-            label 'nodejs:10'
+            label 'nodejs'
         }
     }
     environment {
