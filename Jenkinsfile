@@ -104,7 +104,7 @@ pipeline {
 
                     openshift.withCluster() {
 
-                        return !openshift.selector("bc", "mapit").exists();
+                        return !openshift.selector("bc", "sample-pipeline").exists();
 
                     }
 
@@ -118,7 +118,8 @@ pipeline {
 
                     openshift.withCluster() {
 
-                        openshift.newBuild("--name=mapit", "--image-stream=redhat-openjdk18-openshift:1.1", "--binary")
+                        //openshift.newBuild("--name=sample-pipeline", "--image-stream=redhat-openjdk18-openshift:1.1", "--binary")
+                        openshiftBuild bldCfg: 'sample-pipeline'
 
                     }
 
