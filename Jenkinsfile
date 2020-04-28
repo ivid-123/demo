@@ -23,7 +23,7 @@ pipeline {
         STAGE_TAG = "promoteToQA"
         DEV_PROJECT = "dev"
         STAGE_PROJECT = "stage"
-        TEMPLATE_NAME = "python-nginx"
+        TEMPLATE_NAME = "ng-tomcat-app"
         ARTIFACT_FOLDER = "target"
         PORT = 8081;
 
@@ -105,25 +105,25 @@ pipeline {
             }
         }
 
-        // stage('Store Artifact'){
-        //     steps{
-        //         script{
-        //             def safeBuildName = "${APPLICATION_NAME}_${BUILD_NUMBER}",
-        //                 artifactFolder = "${ARTIFACT_FOLDER}",
-        //                 fullFileName = "${safeBuildName}.tar.gz",
-        //                 applicationZip = "${artifactFolder}/${fullFileName}"
-        //             applicationDir = ["app",
-        //                 "Dockerfile",
-        //             ].join(" ");
-        //             def needTargetPath = !fileExists("${artifactFolder}")
-        //             if (needTargetPath) {
-        //                 sh "mkdir ${artifactFolder}"
-        //             }
-        //             sh "tar -czvf ${applicationZip} ${applicationDir}"
-        //             archiveArtifacts artifacts: "${applicationZip}", excludes: null, onlyIfSuccessful: true
-        //         }
-        //     }
-        // }
+        stage('Store Artifact'){
+            steps{
+                script{
+                    def safeBuildName = "${APPLICATION_NAME}_${BUILD_NUMBER}",
+                        artifactFolder = "${ARTIFACT_FOLDER}",
+                        fullFileName = "${safeBuildName}.tar.gz",
+                        applicationZip = "${artifactFolder}/${fullFileName}"
+                    applicationDir = ["src",
+                        "Dockerfile",
+                    ].join(" ");
+                    def needTargetPath = !fileExists("${artifactFolder}")
+                    if (needTargetPath) {
+                        sh "mkdir ${artifactFolder}"
+                    }
+                    sh "tar -czvf ${applicationZip} ${applicationDir}"
+                    archiveArtifacts artifacts: "${applicationZip}", excludes: null, onlyIfSuccessful: true
+                }
+            }
+        }
         stage('Create Image Builder') {
             when {
                 expression {
