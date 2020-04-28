@@ -16,7 +16,6 @@ pipeline {
         EXECUTE_TEST_STAGE = "true"
         EXECUTE_TAG_STAGE = "true"
         EXECUTE_BUILD_STAGE = "true"
-        TEMPLATE_NAME = "sample-pipeline"
     }
 
     stages {
@@ -95,27 +94,39 @@ pipeline {
             }
         }
 
-
+        
 
         stage('Create Image Builder') {
-            when {
-                expression {
-                    openshift.withCluster() {
-                        openshift.withProject(DEV_PROJECT) {
-                            return !openshift.selector("bc", "${TEMPLATE_NAME}").exists();
-                        }
-                    }
-                }
-            }
+
+            // when {
+
+            //     expression {
+
+            //         openshift.withCluster() {
+
+            //             return !openshift.selector("bc", "sample-pipeline").exists();
+
+            //         }
+
+            //     }
+
+            // }
+
             steps {
+
                 script {
+
                     openshift.withCluster() {
-                        openshift.withProject(DEV_PROJECT) {
-                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
-                        }
+
+                        //openshift.newBuild("--name=sample-pipeline", "--image-stream=redhat-openjdk18-openshift:1.1", "--binary")
+                        openshiftBuild bldCfg: 'sample-pipeline'
+
                     }
+
                 }
+
             }
+
         }
 
         stage('Build Image') {
