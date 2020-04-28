@@ -131,16 +131,16 @@ pipeline {
         }
 
         stage('Create Image Builder') {
-            when {
-                expression {
-                    openshift.withCluster() {
-                        openshift.withProject(DEV_PROJECT) {
-                            echo 'selecting template'
-                            return !openshift.selector("bc", "${TEMPLATE_NAME}").exists();
-                        }
-                    }
-                }
-            }
+            // when {
+            //     expression {
+            //         openshift.withCluster() {
+            //             openshift.withProject(DEV_PROJECT) {
+            //                 echo 'selecting template'
+            //                 return !openshift.selector("bc", "${TEMPLATE_NAME}").exists();
+            //             }
+            //         }
+            //     }
+            // }
             steps {
                 script {
                     openshift.withCluster() {
