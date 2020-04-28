@@ -15,6 +15,17 @@ pipeline {
     }
 
     stages {
+        stage('preamble') {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            echo "Using project: ${openshift.project()}"
+                        }
+                    }
+                }
+            }
+        }
         stage('Install Dependencies') {
             steps {
                 // required to run unit test using phontonjs 
