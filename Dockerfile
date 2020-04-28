@@ -6,8 +6,9 @@ ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
 
 COPY . /usr/src/app
-RUN npm install
-RUN npm run build
 
+RUN npm install
+
+# --- Expose and CMD ---
 EXPOSE 8080
 CMD [ "npm", "start" ]

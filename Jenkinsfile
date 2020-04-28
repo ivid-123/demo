@@ -17,15 +17,16 @@ pipeline {
         EXECUTE_TAG_STAGE = "true"
         EXECUTE_BUILD_STAGE = "true"
 
-        APPLICATION_NAME = 'python-nginx'
-        GIT_REPO = "http://github.com/ruddra/openshift-python-nginx.git"
+        APPLICATION_NAME = 'ng-tomcat-app'
+        GIT_REPO = "https://github.com/ivid-123/demo.git"
         GIT_BRANCH = "master"
         STAGE_TAG = "promoteToQA"
         DEV_PROJECT = "dev"
         STAGE_PROJECT = "stage"
-        TEMPLATE_NAME = "sample-pipeline"
+        TEMPLATE_NAME = "python-nginx"
         ARTIFACT_FOLDER = "target"
         PORT = 8081;
+
     }
 
     stages {
@@ -104,8 +105,26 @@ pipeline {
             }
         }
 
-
-
+        stage('Store Artifact'){
+            steps{
+                script{
+                    def safeBuildName = "${APPLICATION_NAME}_${BUILD_NUMBER}",
+                        artifactFolder = "${ARTIFACT_FOLDER}",
+                        fullFileName = "${safeBuildName}.tar.gz",
+                        applicationZip = "${artifactFolder}/${fullFileName}"
+                    applicationDir = ["app",
+                        "config",
+                        "Dockerfile",
+                    ].join(" ");
+                    def needTargetPath = !fileExists("${artifactFolder}")
+                    if (needTargetPath) {
+                        sh "mkdir ${artifactFolder}"
+                    }
+                    sh "tar -czvf ${applicationZip} ${applicationDir}"
+                    archiveArtifacts artifacts: "${applicationZip}", excludes: null, onlyIfSuccessful: true
+                }
+            }
+        }
         stage('Create Image Builder') {
             when {
                 expression {
@@ -120,7 +139,7 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
-                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
+                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/nginx:mainline-alpine", "--binary=true")
                         }
                     }
                 }
@@ -128,226 +147,80 @@ pipeline {
         }
 
         stage('Build Image') {
-
             steps {
-
                 script {
-
                     openshift.withCluster() {
-
-                        openshift.selector("bc", "mapit").startBuild("--from-file=target/mapit-spring.jar", "--wait")
-
+                        openshift.withProject(env.DEV_PROJECT) {
+                            openshift.selector("bc", "$TEMPLATE_NAME").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true")
+                        }
                     }
-
                 }
-
             }
-
         }
 
-        stage('Promote to DEV') {
-
-            steps {
-
-                script {
-
-                    openshift.withCluster() {
-
-                        openshift.tag("mapit:latest", "mapit:dev")
-
-                    }
-
-                }
-
-            }
-
-        }
-
-        stage('Create DEV') {
-
+        stage('Deploy to DEV') {
             when {
-
                 expression {
-
                     openshift.withCluster() {
-
-                        return !openshift.selector('dc', 'mapit-dev').exists()
-
+                        openshift.withProject(env.DEV_PROJECT) {
+                            return !openshift.selector('dc', "${TEMPLATE_NAME}").exists()
+                        }
                     }
-
                 }
-
             }
-
             steps {
-
                 script {
-
                     openshift.withCluster() {
-
-                        openshift.newApp("mapit:latest", "--name=mapit-dev").narrow('svc').expose()
-
+                        openshift.withProject(env.DEV_PROJECT) {
+                            def app = openshift.newApp("${TEMPLATE_NAME}:latest")
+                            app.narrow("svc").expose("--port=${PORT}");
+                            def dc = openshift.selector("dc", "${TEMPLATE_NAME}")
+                            while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
+                                sleep 10
+                            }
+                        }
                     }
-
                 }
-
             }
-
         }
 
-        stage('Promote STAGE') {
-
+        stage('Promote to STAGE?') {
             steps {
-
+                timeout(time: 15, unit: 'MINUTES') {
+                    input message: "Promote to STAGE?", ok: "Promote"
+                }
                 script {
-
                     openshift.withCluster() {
-
-                        openshift.tag("mapit:dev", "mapit:stage")
-
+                        openshift.tag("${DEV_PROJECT}/${TEMPLATE_NAME}:latest", "${STAGE_PROJECT}/${TEMPLATE_NAME}:${STAGE_TAG}")
                     }
-
                 }
-
             }
-
         }
 
-        stage('Create STAGE') {
-
-            when {
-
-                expression {
-
-                    openshift.withCluster() {
-
-                        return !openshift.selector('dc', 'mapit-stage').exists()
-
-                    }
-
-                }
-
-            }
-
+        stage('Rollout to STAGE') {
             steps {
-
                 script {
-
                     openshift.withCluster() {
-
-                        openshift.newApp("mapit:stage", "--name=mapit-stage").narrow('svc').expose()
-
+                        openshift.withProject(STAGE_PROJECT) {
+                            if (openshift.selector('dc', '${TEMPLATE_NAME}').exists()) {
+                                openshift.selector('dc', '${TEMPLATE_NAME}').delete()
+                                openshift.selector('svc', '${TEMPLATE_NAME}').delete()
+                                openshift.selector('route', '${TEMPLATE_NAME}').delete()
+                            }
+                            openshift.newApp("${TEMPLATE_NAME}:${STAGE_TAG}").narrow("svc").expose("--port=${PORT}")
+                        }
                     }
-
-                }
-
-            }
-
-        }
-        // stage('Build Image') {
-        //     steps {
-        //         //sh 'bash ./src/jenkins/scripts/build.sh'
-        //         sh 'npm build --prod'
-        //         echo 'a versioned package for your the artifacts repository'
-        //     }
-        // }
-        // ------------------------------------
-        // -- STAGE: build
-        // ------------------------------------
-        stage('build') {
-            when {
-                environment name: "EXECUTE_BUILD_STAGE", value: "true"
-            }
-
-            steps{
-                script{
-                    echo 'Build Stage - Creating builder image'
-                    openshiftBuild(
-                        bldCfg: "${SPA_NAME}-builder",
-                        showBuildLogs: "true",
-                        verbose: "true",
-                        waitTime: "1800000"
-                    )
-
-                    echo 'Build Stage - Creating runtime image'
-                    openshiftBuild(
-                        bldCfg: "${SPA_NAME}-runtime",
-                        showBuildLogs: "true",
-                        verbose: "true"
-                    )
-
-                    currentBuild.result = 'SUCCESS'
                 }
             }
         }
-        // ------------------------------------
-        // -- STAGE: tag
-        // ------------------------------------
-        stage('tag') {
-            when {
-                environment name: "EXECUTE_TAG_STAGE", value: "true"
-            }
-
-            steps{
-                script{
-                    echo 'Tag Stage - Tagging current image'
-                    openshiftTag(
-                        srcStream: "${SPA_NAME}-builder",
-                        srcTag: "latest",
-                        destStream: "${SPA_NAME}-builder",
-                        destTag: "${DEV_TAG}",
-                        verbose: "true"
-                    )
-
-                    currentBuild.result = 'SUCCESS'
+        stage('Scale in STAGE') {
+            steps {
+                script {
+                    openshiftScale(namespace: "${STAGE_PROJECT}", deploymentConfig: "${TEMPLATE_NAME}", replicaCount: '3')
                 }
-            }
-        }
-        stage('Deploy on Dev') {
-            when {
-                branch 'development'
-            }
-            steps {
-                sh 'bash ./src/jenkins/scripts/deliver-for-development.sh'
-            }
-        }
-        stage('Integration Testing') {
-            when {
-                branch 'stage'
-            }
-            steps {
-                echo 'run end to end tests.'
-            }
-        }
-        stage('Deploy on Stage') {
-            when {
-                branch 'stage'
-            }
-            steps {
-                sh 'bash ./src/jenkins/scripts/deploy-for-production.sh'
-                input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                sh 'bash ./src/jenkins/scripts/kill.sh'
-
-            }
-        }
-        stage('Deploy for production') {
-            when {
-                branch 'production'
-            }
-            steps {
-                sh 'bash ./src/jenkins/scripts/deploy-for-production.sh'
-                input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                sh 'bash ./src/jenkins/scripts/kill.sh'
             }
         }
 
     }
-    post {
-        always {
-            step([$class: 'Mailer',
-                notifyEveryUnstableBuild: true,
-                recipients: "ashish.mishra2@soprasteria.com",
-                sendToIndividuals: true])
-        }
-    }
+
 }
