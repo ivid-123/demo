@@ -94,15 +94,7 @@ pipeline {
             }
         }
 
-        stage('Build App') {
-
-            steps {
-
-                sh "mvn install"
-
-            }
-
-        }
+        
 
         stage('Create Image Builder') {
 
