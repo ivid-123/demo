@@ -130,31 +130,6 @@ pipeline {
             }
         }
 
-        stage('build') {
-
-            steps{
-                script{
-                    echo 'Build Stage - Creating builder image'
-                    openshiftBuild(
-                        bldCfg: "${SPA_NAME}-builder",
-                        showBuildLogs: "true",
-                        verbose: "true",
-                        waitTime: "1800000"
-                    )
-
-                    echo 'Build Stage - Creating runtime image'
-                    openshiftBuild(
-                        bldCfg: "${SPA_NAME}-runtime",
-                        showBuildLogs: "true",
-                        verbose: "true"
-                    )
-
-                    currentBuild.result = 'SUCCESS'
-                }
-            }
-        }
-
-
         stage('Create Image Builder') {
             when {
                 expression {
