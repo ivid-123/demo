@@ -1,3 +1,7 @@
+
+def templatePath = 'https://raw.githubusercontent.com/openshift/nodejs-ex/master/openshift/templates/nodejs-mongodb.json'
+def templateName = 'nodejs-mongodb-example'
+
 pipeline {
     agent {
         node {
@@ -21,6 +25,20 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject() {
                             echo "Using project: ${openshift.project()}"
+                        }
+                    }
+                }
+            }
+        }
+        stage('cleanup') {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            openshift.selector("all", [template : templateName]).delete()
+                            if (openshift.selector("secrets", templateName).exists()) {
+                                openshift.selector("secrets", templateName).delete()
+                            }
                         }
                     }
                 }
@@ -74,6 +92,166 @@ pipeline {
                     }
                 }
             }
+        }
+
+        stage('Build App') {
+
+            steps {
+
+                sh "mvn install"
+
+            }
+
+        }
+
+        stage('Create Image Builder') {
+
+            when {
+
+                expression {
+
+                    openshift.withCluster() {
+
+                        return !openshift.selector("bc", "mapit").exists();
+
+                    }
+
+                }
+
+            }
+
+            steps {
+
+                script {
+
+                    openshift.withCluster() {
+
+                        openshift.newBuild("--name=mapit", "--image-stream=redhat-openjdk18-openshift:1.1", "--binary")
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        stage('Build Image') {
+
+            steps {
+
+                script {
+
+                    openshift.withCluster() {
+
+                        openshift.selector("bc", "mapit").startBuild("--from-file=target/mapit-spring.jar", "--wait")
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        stage('Promote to DEV') {
+
+            steps {
+
+                script {
+
+                    openshift.withCluster() {
+
+                        openshift.tag("mapit:latest", "mapit:dev")
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        stage('Create DEV') {
+
+            when {
+
+                expression {
+
+                    openshift.withCluster() {
+
+                        return !openshift.selector('dc', 'mapit-dev').exists()
+
+                    }
+
+                }
+
+            }
+
+            steps {
+
+                script {
+
+                    openshift.withCluster() {
+
+                        openshift.newApp("mapit:latest", "--name=mapit-dev").narrow('svc').expose()
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        stage('Promote STAGE') {
+
+            steps {
+
+                script {
+
+                    openshift.withCluster() {
+
+                        openshift.tag("mapit:dev", "mapit:stage")
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        stage('Create STAGE') {
+
+            when {
+
+                expression {
+
+                    openshift.withCluster() {
+
+                        return !openshift.selector('dc', 'mapit-stage').exists()
+
+                    }
+
+                }
+
+            }
+
+            steps {
+
+                script {
+
+                    openshift.withCluster() {
+
+                        openshift.newApp("mapit:stage", "--name=mapit-stage").narrow('svc').expose()
+
+                    }
+
+                }
+
+            }
+
         }
         // stage('Build Image') {
         //     steps {
