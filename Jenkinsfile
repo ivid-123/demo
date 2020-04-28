@@ -135,6 +135,7 @@ pipeline {
                 expression {
                     openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
+                            echo 'selecting template'
                             return !openshift.selector("bc", "${TEMPLATE_NAME}").exists();
                         }
                     }
@@ -144,7 +145,9 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
+                            echo 'starting new build'
                             openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
+                            echo 'finished new build'
                         }
                     }
                 }
