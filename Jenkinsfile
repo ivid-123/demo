@@ -41,6 +41,11 @@ pipeline {
                 }
             }
         }
+        stage('Get Latest Code') {
+            steps {
+                git branch: "${GIT_BRANCH}", url: "${GIT_REPO}" // declared in environment
+            }
+        }
         stage('cleanup') {
             steps {
                 script {
