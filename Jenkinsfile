@@ -98,19 +98,19 @@ pipeline {
 
         stage('Create Image Builder') {
 
-            when {
+            // when {
 
-                expression {
+            //     expression {
 
-                    openshift.withCluster() {
+            //         openshift.withCluster() {
 
-                        return !openshift.selector("bc", "sample-pipeline").exists();
+            //             return !openshift.selector("bc", "sample-pipeline").exists();
 
-                    }
+            //         }
 
-                }
+            //     }
 
-            }
+            // }
 
             steps {
 
