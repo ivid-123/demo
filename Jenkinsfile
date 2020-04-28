@@ -105,25 +105,25 @@ pipeline {
             }
         }
 
-        stage('Store Artifact'){
-            steps{
-                script{
-                    def safeBuildName = "${APPLICATION_NAME}_${BUILD_NUMBER}",
-                        artifactFolder = "${ARTIFACT_FOLDER}",
-                        fullFileName = "${safeBuildName}.tar.gz",
-                        applicationZip = "${artifactFolder}/${fullFileName}"
-                    applicationDir = ["app",
-                        "Dockerfile",
-                    ].join(" ");
-                    def needTargetPath = !fileExists("${artifactFolder}")
-                    if (needTargetPath) {
-                        sh "mkdir ${artifactFolder}"
-                    }
-                    sh "tar -czvf ${applicationZip} ${applicationDir}"
-                    archiveArtifacts artifacts: "${applicationZip}", excludes: null, onlyIfSuccessful: true
-                }
-            }
-        }
+        // stage('Store Artifact'){
+        //     steps{
+        //         script{
+        //             def safeBuildName = "${APPLICATION_NAME}_${BUILD_NUMBER}",
+        //                 artifactFolder = "${ARTIFACT_FOLDER}",
+        //                 fullFileName = "${safeBuildName}.tar.gz",
+        //                 applicationZip = "${artifactFolder}/${fullFileName}"
+        //             applicationDir = ["app",
+        //                 "Dockerfile",
+        //             ].join(" ");
+        //             def needTargetPath = !fileExists("${artifactFolder}")
+        //             if (needTargetPath) {
+        //                 sh "mkdir ${artifactFolder}"
+        //             }
+        //             sh "tar -czvf ${applicationZip} ${applicationDir}"
+        //             archiveArtifacts artifacts: "${applicationZip}", excludes: null, onlyIfSuccessful: true
+        //         }
+        //     }
+        // }
         stage('Create Image Builder') {
             when {
                 expression {
@@ -138,7 +138,7 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
-                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/nginx:mainline-alpine", "--binary=true")
+                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
                         }
                     }
                 }
