@@ -16,7 +16,16 @@ pipeline {
         EXECUTE_TEST_STAGE = "true"
         EXECUTE_TAG_STAGE = "true"
         EXECUTE_BUILD_STAGE = "true"
+
+        APPLICATION_NAME = 'python-nginx'
+        GIT_REPO = "http://github.com/ruddra/openshift-python-nginx.git"
+        GIT_BRANCH = "master"
+        STAGE_TAG = "promoteToQA"
+        DEV_PROJECT = "dev"
+        STAGE_PROJECT = "stage"
         TEMPLATE_NAME = "sample-pipeline"
+        ARTIFACT_FOLDER = "target"
+        PORT = 8081;
     }
 
     stages {
