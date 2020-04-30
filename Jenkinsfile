@@ -25,6 +25,7 @@ pipeline {
         STAGE_PROJECT = "stage"
         TEMPLATE_NAME = "ng-tomcat-app"
         ARTIFACT_FOLDER = "target"
+        CI_CD_PROJECT = "node-app"
         PORT = 8081;
 
     }
@@ -173,7 +174,7 @@ pipeline {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.withProject(env.DEV_PROJECT) {
+                        openshift.withProject(env.CI_CD_PROJECT) {
                             openshift.selector("bc", "$TEMPLATE_NAME").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true")
                         }
                     }
