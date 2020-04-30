@@ -110,25 +110,25 @@ pipeline {
             }
         }
 
-        // stage('Store Artifact'){
-        //     steps{
-        //         script{
-        //             def safeBuildName = "${APPLICATION_NAME}_${BUILD_NUMBER}",
-        //                 artifactFolder = "${ARTIFACT_FOLDER}",
-        //                 fullFileName = "${safeBuildName}.tar.gz",
-        //                 applicationZip = "${artifactFolder}/${fullFileName}"
-        //             applicationDir = ["src",
-        //                 "Dockerfile",
-        //             ].join(" ");
-        //             def needTargetPath = !fileExists("${artifactFolder}")
-        //             if (needTargetPath) {
-        //                 sh "mkdir ${artifactFolder}"
-        //             }
-        //             sh "tar -czvf ${applicationZip} ${applicationDir}"
-        //             archiveArtifacts artifacts: "${applicationZip}", excludes: null, onlyIfSuccessful: true
-        //         }
-        //     }
-        // }
+        stage('Store Artifact'){
+            steps{
+                script{
+                    def safeBuildName = "${APPLICATION_NAME}_${BUILD_NUMBER}",
+                        artifactFolder = "${ARTIFACT_FOLDER}",
+                        fullFileName = "${safeBuildName}.tar.gz",
+                        applicationZip = "${artifactFolder}/${fullFileName}"
+                    applicationDir = ["src",
+                        "Dockerfile",
+                    ].join(" ");
+                    def needTargetPath = !fileExists("${artifactFolder}")
+                    if (needTargetPath) {
+                        sh "mkdir ${artifactFolder}"
+                    }
+                    sh "tar -czvf ${applicationZip} ${applicationDir}"
+                    archiveArtifacts artifacts: "${applicationZip}", excludes: null, onlyIfSuccessful: true
+                }
+            }
+        }
 
         stage('Create Image Builder') {
             when {
