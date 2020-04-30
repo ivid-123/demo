@@ -153,33 +153,33 @@ pipeline {
                 }
             }
         }
-        stage('build') {
-            steps {
-                script {
-                    openshift.withCluster() {
-                        openshift.withProject(env.DEV_PROJECT) {
-                            def builds = openshift.selector("bc", "${TEMPLATE_NAME}").related('builds')
-                            timeout(5) {
-                                builds.untilEach(1) {
-                                    return (it.object().status.phase == "Complete")
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        // stage('Build Image') {
+        // stage('build') {
         //     steps {
         //         script {
         //             openshift.withCluster() {
         //                 openshift.withProject(env.DEV_PROJECT) {
-        //                     openshift.selector("bc", "$TEMPLATE_NAME").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true")
+        //                     def builds = openshift.selector("bc", "${TEMPLATE_NAME}").related('builds')
+        //                     timeout(5) {
+        //                         builds.untilEach(1) {
+        //                             return (it.object().status.phase == "Complete")
+        //                         }
+        //                     }
         //                 }
         //             }
         //         }
         //     }
         // }
+        stage('Build Image') {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject(env.DEV_PROJECT) {
+                            openshift.selector("bc", "$TEMPLATE_NAME").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true")
+                        }
+                    }
+                }
+            }
+        }
 
         stage('Deploy to DEV') {
             when {
