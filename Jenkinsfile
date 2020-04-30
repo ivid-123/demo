@@ -158,7 +158,7 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
-                            openshift.selector("bc", "$TEMPLATE_NAME").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true")
+                            openshift.selector("bc", "${TEMPLATE_NAME}").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true")
                         }
                     }
                 }
@@ -169,7 +169,7 @@ pipeline {
             when {
                 expression {
                     openshift.withCluster() {
-                        openshift.withProject(env.DEV_PROJECT) {
+                        openshift.withProject(DEV_PROJECT) {
                             return !openshift.selector('dc', "${TEMPLATE_NAME}").exists()
                         }
                     }
@@ -178,7 +178,7 @@ pipeline {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.withProject(env.DEV_PROJECT) {
+                        openshift.withProject(DEV_PROJECT) {
                             def app = openshift.newApp("${TEMPLATE_NAME}:latest")
                             app.narrow("svc").expose("--port=${PORT}");
                             def dc = openshift.selector("dc", "${TEMPLATE_NAME}")
