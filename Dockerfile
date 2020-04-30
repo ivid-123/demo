@@ -8,6 +8,7 @@ ENV NODE_ENV $NODE_ENV
 COPY . /usr/src/app
 
 RUN npm install
+RUN npm run build --prod
 
 # --- Nginx Setup ---
 COPY config/nginx/default.conf /etc/nginx/conf.d/
