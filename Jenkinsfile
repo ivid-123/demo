@@ -157,7 +157,7 @@ pipeline {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.withProject() {
+                        openshift.withProject(DEV_PROJECT) {
                             def builds = openshift.selector("bc", ${TEMPLATE_NAME}).related('builds')
                             timeout(5) {
                                 builds.untilEach(1) {
