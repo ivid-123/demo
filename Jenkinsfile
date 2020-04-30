@@ -1,6 +1,6 @@
 
 def templatePath = 'https://raw.githubusercontent.com/openshift/nodejs-ex/master/openshift/templates/nodejs-mongodb.json'
-def templateName = 'nodejs-mongodb-example'
+def templateName = 'ng-tomcat-app'
 
 pipeline {
     agent {
@@ -135,7 +135,7 @@ pipeline {
             when {
                 expression {
                     openshift.withCluster() {
-                        openshift.withProject(DEV_PROJECT) {
+                        openshift.withProject(CI_CD_PROJECT) {
                             echo 'selecting template'
                             return !openshift.selector("bc", "${TEMPLATE_NAME}").exists();
                         }
@@ -145,7 +145,7 @@ pipeline {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.withProject(DEV_PROJECT) {
+                        openshift.withProject(CI_CD_PROJECT) {
                             echo 'starting new build'
                             openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
                             echo 'finished new build'
@@ -174,7 +174,7 @@ pipeline {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.withProject(env.CI_CD_PROJECT) {
+                        openshift.withProject(CI_CD_PROJECT) {
                             openshift.selector("bc", "$TEMPLATE_NAME").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true")
                         }
                     }
@@ -186,7 +186,7 @@ pipeline {
             when {
                 expression {
                     openshift.withCluster() {
-                        openshift.withProject(env.CI_CD_PROJECT) {
+                        openshift.withProject(CI_CD_PROJECT) {
                             return !openshift.selector('dc', "${TEMPLATE_NAME}").exists()
                         }
                     }
@@ -195,7 +195,7 @@ pipeline {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.withProject(env.CI_CD_PROJECT) {
+                        openshift.withProject(CI_CD_PROJECT) {
                             def app = openshift.newApp("${TEMPLATE_NAME}:latest")
                             app.narrow("svc").expose("--port=${PORT}");
                             def dc = openshift.selector("dc", "${TEMPLATE_NAME}")
@@ -215,7 +215,7 @@ pipeline {
                 }
                 script {
                     openshift.withCluster() {
-                        openshift.tag("${DEV_PROJECT}/${TEMPLATE_NAME}:latest", "${STAGE_PROJECT}/${TEMPLATE_NAME}:${STAGE_TAG}")
+                        openshift.tag("${CI_CD_PROJECT}/${TEMPLATE_NAME}:latest", "${CI_CD_PROJECT}/${TEMPLATE_NAME}:${STAGE_TAG}")
                     }
                 }
             }
@@ -225,7 +225,7 @@ pipeline {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.withProject(STAGE_PROJECT) {
+                        openshift.withProject(CI_CD_PROJECT) {
                             if (openshift.selector('dc', '${TEMPLATE_NAME}').exists()) {
                                 openshift.selector('dc', '${TEMPLATE_NAME}').delete()
                                 openshift.selector('svc', '${TEMPLATE_NAME}').delete()
@@ -240,7 +240,7 @@ pipeline {
         stage('Scale in STAGE') {
             steps {
                 script {
-                    openshiftScale(namespace: "${STAGE_PROJECT}", deploymentConfig: "${TEMPLATE_NAME}", replicaCount: '3')
+                    openshiftScale(namespace: "${CI_CD_PROJECT}", deploymentConfig: "${TEMPLATE_NAME}", replicaCount: '3')
                 }
             }
         }
