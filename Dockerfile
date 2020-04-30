@@ -1,4 +1,4 @@
-FROM vipyangyang/jenkins-agent-nodejs-10:v3.11
+FROM node:latest
 
 WORKDIR /usr/src/app
 
