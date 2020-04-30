@@ -171,10 +171,10 @@
       "kind": "ImageStream",
       "apiVersion": "v1",
       "metadata": {
-        "name": "nodejs-010-centos7"
+        "name": "nodejs-10"
       },
       "spec": {
-        "dockerImageRepository": "${NAMESPACE}/nodejs-010-centos7"
+        "dockerImageRepository": "${NAMESPACE}/nodejs-10"
       }
     },
     {
@@ -212,7 +212,7 @@
           "sourceStrategy": {
             "from": {
               "kind": "ImageStreamTag",
-              "name": "nodejs-010-centos7:latest"
+              "name": "nodejs-10:latest"
             }
           }
         },
