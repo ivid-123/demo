@@ -183,10 +183,10 @@ pipeline {
                         openshift.withProject(DEV_PROJECT) {
                             def app = openshift.newApp("${TEMPLATE_NAME}:latest")
                             app.narrow("svc").expose("--port=${PORT}");
-                            def dc = openshift.selector("dc", "${TEMPLATE_NAME}")
-                            while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
-                                // sleep 1
-                            }
+                            //def dc = openshift.selector("dc", "${TEMPLATE_NAME}")
+                            // while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
+                            //     // sleep 1
+                            // }
                         }
                     }
                 }
