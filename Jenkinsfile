@@ -1,11 +1,13 @@
+
+def templatePath = 'https://raw.githubusercontent.com/openshift/nodejs-ex/master/openshift/templates/nodejs-mongodb.json'
+def templateName = 'nodejs-mongodb-example'
+
 pipeline {
-
     agent {
-
-        label 'nodejs'
-
+        node {
+            label 'nodejs'
+        }
     }
-
     environment {
         SPA_NAME = "demo"
         EXECUTE_VALIDATION_STAGE = "true"
@@ -29,165 +31,212 @@ pipeline {
     }
 
     stages {
-
-        stage('Build App') {
-
+        stage('preamble') {
             steps {
-
-                sh "npm install"
-
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            echo "Using project: ${openshift.project()}"
+                        }
+                    }
+                }
+            }
+        }
+        stage('Get Latest Code') {
+            steps {
+                git branch: "${GIT_BRANCH}", url: "${GIT_REPO}" // declared in environment
+            }
+        }
+        stage('cleanup') {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            openshift.selector("all", [template : templateName]).delete()
+                            if (openshift.selector("secrets", templateName).exists()) {
+                                openshift.selector("secrets", templateName).delete()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                // required to run unit test using phontonjs 
+                //sh 'npm install chrome -g'
+                //sh 'which chrome'
+                //sh 'npm install phantomjs-prebuilt -g --ddd'
+                //sh 'npm install phantomjs-prebuilt@2.1.14 --ignore-scripts'
+                // sh 'which chrome'
+                sh 'npm install'
+            }
+        }
+        stage('validation'){
+            when {
+                environment name: "EXECUTE_VALIDATION_STAGE", value: "true"
             }
 
+            failFast true
+            parallel {
+                stage('Prettier'){
+                    when {
+                        environment name: "EXECUTE_VALID_PRETTIER_STAGE", value: "true"
+                    }
+                    steps{
+                        echo 'Validation Stage - prettier'
+                        /// sh 'npm run prettier:check'
+                    }
+                }
+                stage('Tslint'){
+                    when {
+                        environment name: "EXECUTE_VALID_TSLINT_STAGE", value: "true"
+                    }
+                    steps{
+                        echo 'Valildation Stage - tslint'
+                        sh 'npm run lint'
+                    }
+                }
+                stage('test'){
+                    when {
+                        environment name: "EXECUTE_TEST_STAGE", value: "true"
+                    }
+                    steps{
+                        script{
+                            echo 'Test Stage - Launching unit tests'
+                            sh 'npm run test:phantom'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Store Artifact'){
+            steps{
+                script{
+                    def safeBuildName = "${APPLICATION_NAME}_${BUILD_NUMBER}",
+                        artifactFolder = "${ARTIFACT_FOLDER}",
+                        fullFileName = "${safeBuildName}.tar.gz",
+                        applicationZip = "${artifactFolder}/${fullFileName}"
+                    applicationDir = ["src",
+                        "Dockerfile",
+                    ].join(" ");
+                    def needTargetPath = !fileExists("${artifactFolder}")
+                    if (needTargetPath) {
+                        sh "mkdir ${artifactFolder}"
+                    }
+                    sh "tar -czvf ${applicationZip} ${applicationDir}"
+                    archiveArtifacts artifacts: "${applicationZip}", excludes: null, onlyIfSuccessful: true
+                }
+            }
         }
 
         stage('Create Image Builder') {
-
             when {
-
                 expression {
-
                     openshift.withCluster() {
-
-                        return !openshift.selector("bc", "ng-tomcat-app").exists();
-
+                        openshift.withProject(DEV_PROJECT) {
+                            echo 'selecting template'
+                            return !openshift.selector("bc", "${TEMPLATE_NAME}").exists();
+                        }
                     }
-
                 }
-
             }
-
             steps {
-
                 script {
-
                     openshift.withCluster() {
-
-                        openshift.newBuild("--name=ng-tomcat-app", "--image-stream=redhat-openjdk18-openshift:1.1", "--binary")
+                        openshift.withProject(DEV_PROJECT) {
+                            echo 'starting new build'
+                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
+                            echo 'finished new build'
+                        }
 
                     }
-
                 }
-
             }
-
         }
-
         stage('Build Image') {
-
             steps {
-
                 script {
-
                     openshift.withCluster() {
-
-                        openshift.selector("bc", "ng-tomcat-app").startBuild("--from-file=target/ng-tomcat-app-spring.jar", "--wait")
-
+                        openshift.withProject(DEV_PROJECT) {
+                            // openshift.selector("bc", "${TEMPLATE_NAME}").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true")
+                            openshift.selector("bc", "${TEMPLATE_NAME}").startBuild("--from-file=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait")
+                        }
                     }
-
                 }
-
             }
-
         }
-
         stage('Promote to DEV') {
-
             steps {
-
                 script {
-
                     openshift.withCluster() {
-
-                        openshift.tag("ng-tomcat-app:latest", "ng-tomcat-app:dev")
-
+                        openshift.tag("${DEV_PROJECT}/${TEMPLATE_NAME}:latest", "${STAGE_PROJECT}/${TEMPLATE_NAME}:${STAGE_TAG}")
                     }
-
                 }
-
             }
-
         }
-
-        stage('Create DEV') {
-
+        stage('Deploy to DEV') {
             when {
-
                 expression {
-
                     openshift.withCluster() {
-
-                        return !openshift.selector('dc', 'ng-tomcat-app-dev').exists()
-
+                        openshift.withProject(DEV_PROJECT) {
+                            return !openshift.selector('dc', "${TEMPLATE_NAME}").exists()
+                        }
                     }
-
                 }
-
             }
-
             steps {
-
                 script {
-
                     openshift.withCluster() {
-
-                        openshift.newApp("ng-tomcat-app:latest", "--name=ng-tomcat-app-dev").narrow('svc').expose()
-
+                        openshift.withProject(DEV_PROJECT) {
+                            def app = openshift.newApp("${TEMPLATE_NAME}:latest")
+                            app.narrow("svc").expose("--port=${PORT}");
+                            def dc = openshift.selector("dc", "${TEMPLATE_NAME}")
+                            while (dc.object().spec.replicas != dc.object().status.availableReplicas) {
+                                sleep 10
+                            }
+                        }
                     }
-
                 }
-
             }
-
         }
 
-        stage('Promote STAGE') {
-
+        stage('Promote to STAGE?') {
             steps {
-
-                script {
-
-                    openshift.withCluster() {
-
-                        openshift.tag("ng-tomcat-app:dev", "ng-tomcat-app:stage")
-
-                    }
-
+                timeout(time: 15, unit: 'MINUTES') {
+                    input message: "Promote to STAGE?", ok: "Promote"
                 }
-
+                script {
+                    openshift.withCluster() {
+                        openshift.tag("${DEV_PROJECT}/${TEMPLATE_NAME}:latest", "${STAGE_PROJECT}/${TEMPLATE_NAME}:${STAGE_TAG}")
+                    }
+                }
             }
-
         }
 
-        stage('Create STAGE') {
-
-            when {
-
-                expression {
-
-                    openshift.withCluster() {
-
-                        return !openshift.selector('dc', 'ng-tomcat-app-stage').exists()
-
-                    }
-
-                }
-
-            }
-
+        stage('Rollout to STAGE') {
             steps {
-
                 script {
-
                     openshift.withCluster() {
-
-                        openshift.newApp("ng-tomcat-app:stage", "--name=ng-tomcat-app-stage").narrow('svc').expose()
-
+                        openshift.withProject(STAGE_PROJECT) {
+                            if (openshift.selector('dc', '${TEMPLATE_NAME}').exists()) {
+                                openshift.selector('dc', '${TEMPLATE_NAME}').delete()
+                                openshift.selector('svc', '${TEMPLATE_NAME}').delete()
+                                openshift.selector('route', '${TEMPLATE_NAME}').delete()
+                            }
+                            openshift.newApp("${TEMPLATE_NAME}:${STAGE_TAG}").narrow("svc").expose("--port=${PORT}")
+                        }
                     }
-
                 }
-
             }
-
+        }
+        stage('Scale in STAGE') {
+            steps {
+                script {
+                    openshiftScale(namespace: "${STAGE_PROJECT}", deploymentConfig: "${TEMPLATE_NAME}", replicaCount: '3')
+                }
+            }
         }
 
     }
