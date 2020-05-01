@@ -21,6 +21,7 @@ pipeline {
         GIT_REPO = "https://github.com/ivid-123/demo.git"
         GIT_BRANCH = "master"
         STAGE_TAG = "promoteToQA"
+        DEV_TAG = "1.0"
         DEV_PROJECT = "dev"
         STAGE_PROJECT = "stage"
         TEMPLATE_NAME = "ng-tomcat-app"
@@ -150,25 +151,30 @@ pipeline {
                             echo 'finished new build'
                         }
 
+                    }
+                }
+            }
+        }
+        stage('Build Image') {
+            steps {
+                script {
+                    openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
-                            openshift.selector("bc", "${TEMPLATE_NAME}").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true","--verbose=true")
+                            openshift.selector("bc", "${TEMPLATE_NAME}").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true,--verbose=true","--verbose=true")
                         }
                     }
                 }
             }
         }
-        // stage('Build Image') {
-        //     steps {
-        //         script {
-        //             openshift.withCluster() {
-        //                 openshift.withProject(DEV_PROJECT) {
-        //                     openshift.selector("bc", "${TEMPLATE_NAME}").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true","--verbose=true")
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
+        stage('Promote to DEV') {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.tag("${DEV_PROJECT}/${TEMPLATE_NAME}:latest", "${STAGE_PROJECT}/${TEMPLATE_NAME}:${STAGE_TAG}")
+                    }
+                }
+            }
+        }
         stage('Deploy to DEV') {
             when {
                 expression {
