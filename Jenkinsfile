@@ -166,15 +166,6 @@ pipeline {
                 }
             }
         }
-        stage('Promote to DEV') {
-            steps {
-                script {
-                    openshift.withCluster() {
-                        openshift.tag("${DEV_PROJECT}/${TEMPLATE_NAME}:latest", "${STAGE_PROJECT}/${TEMPLATE_NAME}:${STAGE_TAG}")
-                    }
-                }
-            }
-        }
         stage('Deploy to DEV') {
             when {
                 expression {
