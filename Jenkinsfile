@@ -149,14 +149,7 @@ pipeline {
                             openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
                             echo 'finished new build'
                         }
-                    }
-                }
-            }
-        }
-        stage('Build Image') {
-            steps {
-                script {
-                    openshift.withCluster() {
+
                         openshift.withProject(DEV_PROJECT) {
                             openshift.selector("bc", "${TEMPLATE_NAME}").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true","--verbose=true")
                         }
@@ -164,6 +157,17 @@ pipeline {
                 }
             }
         }
+        // stage('Build Image') {
+        //     steps {
+        //         script {
+        //             openshift.withCluster() {
+        //                 openshift.withProject(DEV_PROJECT) {
+        //                     openshift.selector("bc", "${TEMPLATE_NAME}").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true","--verbose=true")
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Deploy to DEV') {
             when {
