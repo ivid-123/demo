@@ -7,8 +7,7 @@ ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
 
 COPY . /usr/src/app
-RUN ["/bin/bash", "-c", "sh pwd"]
-RUN ["/bin/bash", "-c", "sh ls"]
+RUN echo $(ls -1 /usr/src/app)
 # RUN npm install
 # RUN npm run build --prod
 
