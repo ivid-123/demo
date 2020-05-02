@@ -12,15 +12,17 @@ FROM nginx:mainline-alpine
 # --- Work Directory ---
 WORKDIR /usr/src/app
 
-RUN cd . && ls -l 
+
+RUN echo $(ls -1 .)
 
 # --- Python Setup ---
-ADD ./dist /usr/src/app/dist
-ADD ./src /usr/src/app/src
-ADD ./config /usr/src/app/config
-ADD ./Dockerfile /usr/src/app/Dockerfile
+COPY ./dist /usr/src/app/dist
+COPY ./config /usr/src/app/config
+COPY ./Dockerfile /usr/src/app/Dockerfile
 
-RUN cd . && ls -l 
+# CMD [ "ls","-1" ]
+RUN echo $(ls -1 /usr/src/app)
+
 
 # RUN pip install -r app/requirements.pip
 
