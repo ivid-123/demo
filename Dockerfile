@@ -27,11 +27,12 @@ RUN echo $(ls /usr/src/app/dist)
 
 # RUN pip install -r app/requirements.pip
 RUN echo $(pwd)
+RUN echo $(ls /usr/share/nginx/html)
 
-COPY  ./usr/src/app/dist /usr/share/nginx/html
+COPY usr/src/app/dist /usr/share/nginx/html
 
 # Copy the default nginx.conf provided by tiangolo/node-frontend
-COPY  ./usr/src/app/config/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY usr/src/app/config/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # --- Nginx Setup ---
 COPY config/nginx/default.conf /etc/nginx/conf.d/
