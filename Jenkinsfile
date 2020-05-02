@@ -148,7 +148,8 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
                             echo 'creating a new build configuration'
-                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
+                            // openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
+                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/openshift/jenkins-agent-nodejs-8-centos7:v3.11", "--binary=true")
                             echo 'new build configuration created'
                         }
 

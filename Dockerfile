@@ -1,4 +1,4 @@
-FROM vipyangyang/jenkins-agent-nodejs-10:v3.11
+FROM openshift/jenkins-agent-nodejs-8-centos7:v3.11
 
 
 WORKDIR /usr/src/app
