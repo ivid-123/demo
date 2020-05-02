@@ -148,7 +148,7 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
                             echo 'creating a new build configuration'
-                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--strategy=docker", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
+                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
                             echo 'new build configuration created'
                         }
 
@@ -161,7 +161,7 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
-                            openshift.selector("bc", "${TEMPLATE_NAME}").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true","--verbose=true")
+                            openshift.selector("bc", "${TEMPLATE_NAME}").startBuild("--from-archive=${ARTIFACT_FOLDER}/${APPLICATION_NAME}_${BUILD_NUMBER}.tar.gz", "--wait=true")
                         }
                     }
                 }
