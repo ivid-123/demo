@@ -111,7 +111,13 @@ pipeline {
                 }
             }
         }
-
+        stage('Build App') {
+            steps {
+                script {
+                    sh 'npm run build --prod'
+                }
+            }
+        }
         stage('Store Artifact'){
             steps{
                 script{
@@ -120,6 +126,7 @@ pipeline {
                         fullFileName = "${safeBuildName}.tar.gz",
                         applicationZip = "${artifactFolder}/${fullFileName}"
                     applicationDir = ["src",
+                        "dist",
                         "Dockerfile",
                     ].join(" ");
                     def needTargetPath = !fileExists("${artifactFolder}")
