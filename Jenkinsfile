@@ -69,7 +69,7 @@ pipeline {
                 //sh 'npm install phantomjs-prebuilt -g --ddd'
                 //sh 'npm install phantomjs-prebuilt@2.1.14 --ignore-scripts'
                 // sh 'which chrome'
-                //sh 'npm install'
+                sh 'npm install'
                 echo 'installing dependencies'
             }
         }
