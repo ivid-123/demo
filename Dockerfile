@@ -3,22 +3,13 @@ FROM vipyangyang/jenkins-agent-nodejs-10:v3.11
 
 WORKDIR /usr/src/app
 
-# ARG NODE_ENV
-# ENV NODE_ENV $NODE_ENV
+ARG NODE_ENV
+ENV NODE_ENV $NODE_ENV
 
 COPY . /usr/src/app
-COPY package.json package-lock.json  /usr/src/app/
-RUN /bin/bash -c 'sh pwd'
-RUN /bin/bash -c 'echo "listing directory start........."'
-RUN /bin/bash -c 'sh ls'
-RUN /bin/bash -c 'echo "listing directory ends........."'
+RUN ["/bin/bash", "-c", "echo hello"]
 # RUN npm install
-RUN /bin/bash -c 'echo "npm install finished........."'
-RUN /bin/bash -c 'echo "npm build starts........."'
-
 # RUN npm run build --prod
-RUN /bin/bash -c 'echo "npm build finished........."'
-
 
 # # --- Nginx Setup ---
 # COPY config/nginx/default.conf /etc/nginx/conf.d/
