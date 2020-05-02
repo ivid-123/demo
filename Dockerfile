@@ -8,9 +8,9 @@ ENV NODE_ENV $NODE_ENV
 
 COPY . /usr/src/app
 
-RUN /bin/bash -c 'echo "npm install starts........."'
-RUN npm install
-RUN /bin/bash -c 'echo "npm install finished........."'
+# RUN /bin/bash -c 'echo "npm install starts........."'
+# RUN npm install
+# RUN /bin/bash -c 'echo "npm install finished........."'
 RUN /bin/bash -c 'echo "npm build starts........."'
 
 RUN npm run build --prod
