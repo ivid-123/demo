@@ -13,7 +13,7 @@ FROM nginx:mainline-alpine
 WORKDIR /usr/src/app
 
 
-RUN echo $(ls -1 .)
+RUN echo $(ls /)
 
 # --- Python Setup ---
 COPY ./dist /usr/src/app/dist
@@ -21,15 +21,16 @@ COPY ./config /usr/src/app/config
 COPY ./Dockerfile /usr/src/app/Dockerfile
 
 # CMD [ "ls","-1" ]
-RUN echo $(ls -1 /usr/src/app)
+RUN echo $(ls /usr/src/app)
 
 
 # RUN pip install -r app/requirements.pip
+RUN echo $(pwd)
 
-COPY  ./usr/src/app/dist /usr/share/nginx/html
+COPY  /usr/src/app/dist /usr/share/nginx/html
 
 # Copy the default nginx.conf provided by tiangolo/node-frontend
-COPY  ./config/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY  /usr/src/app/config/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # --- Nginx Setup ---
 COPY config/nginx/default.conf /etc/nginx/conf.d/
