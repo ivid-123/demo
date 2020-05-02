@@ -9,11 +9,11 @@ ENV NODE_ENV $NODE_ENV
 COPY . /usr/src/app
 
 RUN /bin/bash -c 'echo "npm install starts........."'
-RUN npm install
+# RUN npm install
 RUN /bin/bash -c 'echo "npm install finished........."'
 RUN /bin/bash -c 'echo "npm build starts........."'
 
-RUN npm run build --prod
+# RUN npm run build --prod
 RUN /bin/bash -c 'echo "npm build finished........."'
 
 
@@ -25,8 +25,8 @@ RUN /bin/bash -c 'echo "npm build finished........."'
 # RUN addgroup nginx root
 
 # --- Expose and CMD ---
-EXPOSE 8080
-CMD [ "npm", "start" ]
+# EXPOSE 8080
+# CMD [ "npm", "start" ]
 
 
 # #stage 1
