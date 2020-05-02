@@ -12,8 +12,16 @@ FROM nginx:mainline-alpine
 # --- Work Directory ---
 WORKDIR /usr/src/app
 
+RUN cd . && ls
+
 # --- Python Setup ---
-ADD . /usr/src/app
+ADD ./dist /usr/src/app/dist
+ADD ./src /usr/src/app/src
+ADD ./config /usr/src/app/config
+ADD ./Dockerffile /usr/src/app/Dockerffile
+
+RUN cd /this/folder && ls
+
 # RUN pip install -r app/requirements.pip
 
 COPY  ./usr/src/app/dist /usr/share/nginx/html
