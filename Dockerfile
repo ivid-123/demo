@@ -1,36 +1,33 @@
-FROM vipyangyang/jenkins-agent-nodejs-10:v3.11 as build-stage
+FROM nginx:mainline-alpine
 
+# --- Python Installation ---
+# RUN apk add --no-cache python3 && \
+#     python3 -m ensurepip && \
+#     rm -r /usr/lib/python*/ensurepip && \
+#     pip3 install --upgrade pip setuptools && \
+#     if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
+#     if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
+#     rm -r /root/.cache
 
-WORKDIR /app
+# --- Work Directory ---
+WORKDIR /usr/src/app
 
-ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
+# --- Python Setup ---
+ADD . .
+# RUN pip install -r app/requirements.pip
 
-COPY . /app
-
-
-# # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
-# FROM nginx:1.15
-# COPY --from=build-stage /app/dist /usr/share/nginx/html
-
-# # Copy the default nginx.conf provided by tiangolo/node-frontend
-# COPY --from=build-stage ./config/nginx/default.conf /etc/nginx/conf.d/default.conf
-# # COPY ./config/nginx/default.conf /etc/nginx/conf.d/default.conf
-# EXPOSE 80
-# CMD ["nginx", "-g", "daemon off;"]
-
-FROM nginx:stable
-
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY  usr/src/app/dist /usr/share/nginx/html
 
 # Copy the default nginx.conf provided by tiangolo/node-frontend
-COPY --from=build-stage ./config/nginx/default.conf /etc/nginx/conf.d/default.conf
-# COPY ./config/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY  config/nginx/default.conf /etc/nginx/conf.d/default.conf
 
-# support running as arbitrary user which belogs to the root group
+# --- Nginx Setup ---
+COPY config/nginx/default.conf /etc/nginx/conf.d/
 RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
-# users are not allowed to listen on priviliged ports
-RUN sed -i.bak 's/listen\(.*\)80;/listen 8081;/' /etc/nginx/conf.d/default.conf
-EXPOSE 8081
-# comment user directive as master process is run as user in OpenShift anyhow
+RUN chgrp -R root /var/cache/nginx
 RUN sed -i.bak 's/^user/#user/' /etc/nginx/nginx.conf
+RUN addgroup nginx root
+
+# --- Expose and CMD ---
+EXPOSE 8081
+CMD ["nginx", "-g", "daemon off;"]
