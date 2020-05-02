@@ -21,6 +21,12 @@ COPY . /app
 
 FROM nginx:stable
 
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+# Copy the default nginx.conf provided by tiangolo/node-frontend
+COPY --from=build-stage ./config/nginx/default.conf /etc/nginx/conf.d/default.conf
+# COPY ./config/nginx/default.conf /etc/nginx/conf.d/default.conf
+
 # support running as arbitrary user which belogs to the root group
 RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
 # users are not allowed to listen on priviliged ports
