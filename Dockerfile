@@ -1,5 +1,6 @@
 FROM vipyangyang/jenkins-agent-nodejs-10:v3.11
 
+
 WORKDIR /usr/src/app
 
 ARG NODE_ENV
@@ -7,8 +8,14 @@ ENV NODE_ENV $NODE_ENV
 
 COPY . /usr/src/app
 
-# RUN npm install
-# RUN npm run build --prod
+RUN /bin/bash -c 'echo "npm install starts........."'
+RUN npm install
+RUN /bin/bash -c 'echo "npm install finished........."'
+RUN /bin/bash -c 'echo "npm build starts........."'
+
+RUN npm run build --prod
+RUN /bin/bash -c 'echo "npm build finished........."'
+
 
 # # --- Nginx Setup ---
 # COPY config/nginx/default.conf /etc/nginx/conf.d/

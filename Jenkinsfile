@@ -147,9 +147,9 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
-                            echo 'starting new build'
-                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
-                            echo 'finished new build'
+                            echo 'creating a new build configuration'
+                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--strategy=docker", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
+                            echo 'new build configuration created'
                         }
 
                     }
@@ -222,13 +222,13 @@ pipeline {
                 }
             }
         }
-        stage('Scale in STAGE') {
-            steps {
-                script {
-                    openshiftScale(namespace: "${STAGE_PROJECT}", deploymentConfig: "${TEMPLATE_NAME}", replicaCount: '2')
-                }
-            }
-        }
+        // stage('Scale in STAGE') {
+        //     steps {
+        //         script {
+        //             openshiftScale(namespace: "${STAGE_PROJECT}", deploymentConfig: "${TEMPLATE_NAME}", replicaCount: '2')
+        //         }
+        //     }
+        // }
 
     }
 
