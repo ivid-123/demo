@@ -1,28 +1,53 @@
-FROM nginx:mainline-alpine
+FROM vipyangyang/jenkins-agent-nodejs-10:v3.11
 
-# --- Python Installation ---
-RUN apk add --no-cache python3 && \
-    python3 -m ensurepip && \
-    rm -r /usr/lib/python*/ensurepip && \
-    pip3 install --upgrade pip setuptools && \
-    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
-    if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
-    rm -r /root/.cache
 
-# --- Work Directory ---
 WORKDIR /usr/src/app
 
-# --- Python Setup ---
-ADD . .
-# RUN pip install -r app/requirements.pip
+ARG NODE_ENV
+ENV NODE_ENV $NODE_ENV
 
-# --- Nginx Setup ---
-COPY config/nginx/default.conf /etc/nginx/conf.d/
-RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
-RUN chgrp -R root /var/cache/nginx
-RUN sed -i.bak 's/^user/#user/' /etc/nginx/nginx.conf
-RUN addgroup nginx root
+COPY . /usr/src/app
+RUN ["/bin/bash", "-c", "sh pwd"]
+RUN ["/bin/bash", "-c", "sh ls"]
+# RUN npm install
+# RUN npm run build --prod
+
+# # --- Nginx Setup ---
+# COPY config/nginx/default.conf /etc/nginx/conf.d/
+# RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
+# RUN chgrp -R root /var/cache/nginx
+# RUN sed -i.bak 's/^user/#user/' /etc/nginx/nginx.conf
+# RUN addgroup nginx root
 
 # --- Expose and CMD ---
-EXPOSE 8081
-# CMD gunicorn --bind 0.0.0.0:5000 wsgi --chdir /usr/src/app/app & nginx -g "daemon off;"
+EXPOSE 80
+CMD [ "npm", "start" ]
+
+
+# #stage 1
+# FROM vipyangyang/jenkins-agent-nodejs-10:v3.11 as build-step
+
+# WORKDIR /usr/src/app
+
+# COPY package.json ./
+# RUN npm install
+# COPY . .
+# RUN npm run build --prod
+
+# # stage 2
+# FROM nginx:alpine as prod-stage
+# COPY --from=build-step /usr/src/app/dist/letslearn  /usr/share/nginx/html
+# EXPOSE 80
+# CMD ["nginx", "-g", "daemon off;"]
+
+# # # --- Nginx Setup ---
+# # COPY config/nginx/default.conf /etc/nginx/conf.d/
+# # RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
+# # RUN chgrp -R root /var/cache/nginx
+# # RUN sed -i.bak 's/^user/#user/' /etc/nginx/nginx.conf
+# # RUN addgroup nginx root
+
+# # --- Expose and CMD ---
+# # EXPOSE 8080
+# # CMD [ "npm", "start" ]
+
