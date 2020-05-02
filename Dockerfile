@@ -1,21 +1,19 @@
 FROM vipyangyang/jenkins-agent-nodejs-10:v3.11
 
 
-WORKDIR /usr/src/app
 
-ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
+# build-time variables 
+# prod|sandbox its value will be come from outside 
+ARG env=prod
 
-COPY . /usr/src/app
+RUN apk update && apk add --no-cache make git
 
-RUN /bin/bash -c 'echo "npm install starts........."'
-# RUN npm install
-RUN /bin/bash -c 'echo "npm install finished........."'
-RUN /bin/bash -c 'echo "npm build starts........."'
-
-# RUN npm run build --prod
-RUN /bin/bash -c 'echo "npm build finished........."'
-
+# Move our files into directory name "app"
+WORKDIR /app
+COPY package.json package-lock.json  /app/
+RUN npm install @angular/cli@6.0.8 -g
+RUN cd /app && npm install
+COPY .  /app
 
 # # --- Nginx Setup ---
 # COPY config/nginx/default.conf /etc/nginx/conf.d/
