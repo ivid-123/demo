@@ -120,6 +120,7 @@ pipeline {
                         fullFileName = "${safeBuildName}.tar.gz",
                         applicationZip = "${artifactFolder}/${fullFileName}"
                     applicationDir = ["src",
+                        "config",
                         "Dockerfile",
                     ].join(" ");
                     def needTargetPath = !fileExists("${artifactFolder}")
@@ -148,7 +149,8 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
                             echo 'creating a new build configuration'
-                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
+                            // openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
+                            openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/nginx:mainline-alpine", "--binary=true")
                             echo 'new build configuration created'
                         }
 
