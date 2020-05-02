@@ -127,6 +127,7 @@ pipeline {
                         applicationZip = "${artifactFolder}/${fullFileName}"
                     applicationDir = ["src",
                         "dist",
+                        "config",
                         "Dockerfile",
                     ].join(" ");
                     def needTargetPath = !fileExists("${artifactFolder}")
