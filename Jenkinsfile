@@ -114,7 +114,7 @@ pipeline {
         stage('Build App') {
             steps {
                 script {
-                    sh 'npm run build --prod'
+                    sh 'npm run build --configuration=production --disable-host-check --base-href / --host 0.0.0.0 --port 8080'
                 }
             }
         }
