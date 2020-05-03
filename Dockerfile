@@ -17,6 +17,10 @@ RUN chgrp -R root /var/cache/nginx
 RUN sed -i.bak 's/^user/#user/' /etc/nginx/nginx.conf
 RUN addgroup nginx root
 
+#-----printing-------
+RUN echo $(echo 'printing nginx default public html folder')
+RUN echo $(ls /usr/share/nginx/html)
+
 EXPOSE 8081
 
 CMD ["nginx", "-g", "daemon off;"]
