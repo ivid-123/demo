@@ -27,7 +27,7 @@ pipeline {
         TEMPLATE_NAME = "ng-tomcat-app"
         ARTIFACT_FOLDER = "target"
         PORT = 80;
-        MAIL_TO = 'ashish.mishra2@soprasteria.com'
+        MAIL_TO = 'ashish.mishra2@soprasteria.com,jenkinstestuser01@gmail.com'
 
     }
 
