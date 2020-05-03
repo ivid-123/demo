@@ -251,18 +251,12 @@ pipeline {
         // }
         always {
                         //cest = TimeZone.getTimeZone("CEST")
-                        def cest = new Date()
-                        println(cest) 
-                        def mailRecipients = 'ashish.mishra2@soprasteria.com'
-                        def jobName = currentBuild.fullDisplayName
-                        env.Name = Name
-                        env.cest = cest
                         // emailext body: '''${SCRIPT, template="email-html.template"}''',
                         emailext body: '''hi in the world''',
                         mimeType: 'text/html',
-                        subject: "[Jenkins] ${jobName}",
-                        to: "${mailRecipients}",
-                        replyTo: "${mailRecipients}"
+                        subject: "[Jenkins] ${currentBuild.fullDisplayName}",
+                        to: "${MAIL_TO}",
+                        replyTo: "${MAIL_TO}"
         }
 
     }
