@@ -114,7 +114,7 @@ pipeline {
         stage('Build App') {
             steps {
                 script {
-                    sh 'npm run build --configuration=production --output-path=./dist/out'
+                    sh 'npm run build --prod'
                 }
             }
         }
