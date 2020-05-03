@@ -249,14 +249,23 @@ pipeline {
         // success {
         //     mail to: "${MAIL_TO}", subject: 'The Pipeline success:'
         // }
-        always {
+        success {
                         //cest = TimeZone.getTimeZone("CEST")
-                        // emailext body: '''${SCRIPT, template="email-html.template"}''',
-                        emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                        emailext body: '''${SCRIPT, template="email-html.template"}''',
+                        //emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
                         mimeType: 'text/html',
                         subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}",
                         to: "${MAIL_TO}",
                         replyTo: "${MAIL_TO}"
+        }
+        failure {
+
+                        emailext body: '''${SCRIPT, template="groovy-html.template"}''',
+                        mimeType: 'text/html',
+                        subject: "[Jenkins] ${currentBuild.fullDisplayName}",
+                        to: "${MAIL_TO}",
+                        replyTo: "${MAIL_TO}",
+                        recipientProviders: [[$class: 'CulpritsRecipientProvider']]
         }
 
     }
