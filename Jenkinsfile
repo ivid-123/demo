@@ -250,7 +250,7 @@ pipeline {
         //     mail to: "${MAIL_TO}", subject: 'The Pipeline success:'
         // }
         always {
-            cest = TimeZone.getTimeZone("CEST")
+                        //cest = TimeZone.getTimeZone("CEST")
                         def cest = new Date()
                         println(cest) 
                         def mailRecipients = 'ashish.mishra2@soprasteria.com'
