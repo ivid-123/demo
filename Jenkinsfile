@@ -260,7 +260,7 @@ pipeline {
         }
         failure {
 
-                        emailext body: '''${SCRIPT, template="groovy-html.template"}''',
+                        emailext body: '''${SCRIPT, template="email-html.template"}''',
                         mimeType: 'text/html',
                         subject: "[Jenkins] ${currentBuild.fullDisplayName}",
                         to: "${MAIL_TO}",
