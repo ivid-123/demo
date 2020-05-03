@@ -9,6 +9,6 @@ RUN rm -rf /usr/share/nginx/html/*
 ## copy over the artifacts in dist folder to default nginx public folder
 COPY dist/ /usr/share/nginx/html
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["nginx", "-g", "daemon off;"]
