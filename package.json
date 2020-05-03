@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "start:dev": "ng serve --configuration=production --watch --disable-host-check --base-href / --host 0.0.0.0 --port 4200",
     "test": "ng test",
     "test:phantom": "ng test --karmaConfig=src/karma.phantom.conf.js",
     "test:dev": "ng test --watch --karmaConfig=src/karma.dev.conf.js",
