@@ -1,3 +1,4 @@
+REM prettier-ignore-start
 oc new-project cicd --display-name="CI/CD"
 oc project cicd
 oc new-app jenkins-ephemeral 
@@ -15,3 +16,4 @@ oc create -f https://raw.githubusercontent.com/ivid-123/demo/master/openshift/je
 
 
 oc start-build ng-tomcat-app
+REM prettier-ignore-end
