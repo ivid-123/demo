@@ -21,6 +21,6 @@ RUN addgroup nginx root
 RUN echo $(echo 'printing nginx default public html folder')
 RUN echo $(ls /usr/share/nginx/html)
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["nginx", "-g", "daemon off;"]

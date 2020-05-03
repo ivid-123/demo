@@ -26,7 +26,7 @@ pipeline {
         STAGE_PROJECT = "stage"
         TEMPLATE_NAME = "ng-tomcat-app"
         ARTIFACT_FOLDER = "target"
-        PORT = 8080;
+        PORT = 8081;
 
     }
 
@@ -114,7 +114,7 @@ pipeline {
         stage('Build App') {
             steps {
                 script {
-                    sh 'npm run build --configuration=production --disable-host-check --base-href / --host 0.0.0.0 --port 8080'
+                    sh 'npm run build --prod --disable-host-check --base-href / --host 0.0.0.0 --port 4200'
                 }
             }
         }
