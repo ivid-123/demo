@@ -4,7 +4,7 @@ FROM nginx:mainline-alpine
 COPY config/nginx/ /etc/nginx/conf.d/
 
 ## Remove default nginx website
-RUN rm -rf /usr/share/nginx/html/*
+# RUN rm -rf /usr/share/nginx/html/*
 
 ## copy over the artifacts in dist folder to default nginx public folder
 COPY dist/ /usr/share/nginx/html
