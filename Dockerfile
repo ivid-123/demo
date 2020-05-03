@@ -4,7 +4,7 @@ FROM nginx:mainline-alpine
 COPY config/nginx/ /etc/nginx/conf.d/
 
 ## Remove default nginx website
-# RUN rm -rf /usr/share/nginx/html/*
+RUN rm -rf /usr/share/nginx/html/*
 
 ## copy over the artifacts in dist folder to default nginx public folder
 COPY dist/ /usr/share/nginx/html
@@ -21,6 +21,6 @@ RUN addgroup nginx root
 RUN echo $(echo 'printing nginx default public html folder')
 RUN echo $(ls /usr/share/nginx/html)
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["nginx", "-g", "daemon off;"]

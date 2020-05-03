@@ -26,7 +26,7 @@ pipeline {
         STAGE_PROJECT = "stage"
         TEMPLATE_NAME = "ng-tomcat-app"
         ARTIFACT_FOLDER = "target"
-        PORT = 8080;
+        PORT = 8081;
 
     }
 
