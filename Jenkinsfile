@@ -235,26 +235,26 @@ pipeline {
 
     }
     post {
-        always {
-            echo 'I will always say Hello again!'
+        // always {
+        //     echo 'I will always say Hello again!'
 
-            emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
-                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-                    subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+        //     emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+        //         recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+        //             subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
 
-        }
-        failure {
-            mail to: "${MAIL_TO}", subject: 'The Pipeline failed:'
-        }
-        success {
-            mail to: "${MAIL_TO}", subject: 'The Pipeline success:'
-        }
+        // }
+        // failure {
+        //     mail to: "${MAIL_TO}", subject: 'The Pipeline failed:'
+        // }
+        // success {
+        //     mail to: "${MAIL_TO}", subject: 'The Pipeline success:'
+        // }
         always {
                         //cest = TimeZone.getTimeZone("CEST")
                         // emailext body: '''${SCRIPT, template="email-html.template"}''',
                         emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
                         mimeType: 'text/html',
-                        subject: "[Jenkins] ${currentBuild.fullDisplayName}",
+                        subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}",
                         to: "${MAIL_TO}",
                         replyTo: "${MAIL_TO}"
         }
