@@ -27,6 +27,7 @@ pipeline {
         TEMPLATE_NAME = "ng-tomcat-app"
         ARTIFACT_FOLDER = "target"
         PORT = 80;
+        MAIL_TO = 'ashish.mishra2@soprasteria.com'
 
     }
 
@@ -230,6 +231,23 @@ pipeline {
                     openshiftScale(namespace: "${STAGE_PROJECT}", deploymentConfig: "${TEMPLATE_NAME}", replicaCount: '2')
                 }
             }
+        }
+
+    }
+    post {
+        always {
+            echo 'I will always say Hello again!'
+
+            emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                    subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+
+        }
+        failure {
+            mail to: "${MAIL_TO}", subject: 'The Pipeline failed:'
+        }
+        success {
+            mail to: "${MAIL_TO}", subject: 'The Pipeline success:'
         }
 
     }
