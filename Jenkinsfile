@@ -52,28 +52,22 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject() {
-                            openshift.selector("all", [template : templateName]).delete()
-                            if (openshift.selector("secrets", templateName).exists()) {
-                                openshift.selector("secrets", templateName).delete()
+                            openshift.selector("all", [template : "${TEMPLATE_NAME}"]).delete()
+                            if (openshift.selector("secrets", "${TEMPLATE_NAME}").exists()) {
+                                openshift.selector("secrets", "${TEMPLATE_NAME}").delete()
                             }
                         }
                     }
                 }
             }
         }
-        stage('Install Dependencies') {
+        stage('Install Packages') {
             steps {
-                // required to run unit test using phontonjs 
-                //sh 'npm install chrome -g'
-                //sh 'which chrome'
-                //sh 'npm install phantomjs-prebuilt -g --ddd'
-                //sh 'npm install phantomjs-prebuilt@2.1.14 --ignore-scripts'
-                // sh 'which chrome'
                 sh 'npm install'
                 echo 'installing dependencies'
             }
         }
-        stage('validation'){
+        stage('Validation'){
             when {
                 environment name: "EXECUTE_VALIDATION_STAGE", value: "true"
             }
@@ -86,7 +80,7 @@ pipeline {
                     }
                     steps{
                         echo 'Validation Stage - prettier'
-                        /// sh 'npm run prettier:check'
+                        sh 'npm run prettier:check'
                     }
                 }
                 stage('Tslint'){
@@ -95,7 +89,7 @@ pipeline {
                     }
                     steps{
                         echo 'Valildation Stage - tslint'
-                       // sh 'npm run lint'
+                        sh 'npm run lint'
                     }
                 }
                 stage('test'){
@@ -105,7 +99,7 @@ pipeline {
                     steps{
                         script{
                             echo 'Test Stage - Launching unit tests'
-                         //   sh 'npm run test:phantom'
+                            sh 'npm run test:phantom'
                         }
                     }
                 }
@@ -156,7 +150,6 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject(DEV_PROJECT) {
                             echo 'creating a new build configuration'
-                            // openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/vipyangyang/jenkins-agent-nodejs-10:v3.11", "--binary=true")
                             openshift.newBuild("--name=${TEMPLATE_NAME}", "--docker-image=docker.io/nginx:mainline-alpine", "--binary=true")
                             echo 'new build configuration created'
                         }
