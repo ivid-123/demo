@@ -250,7 +250,7 @@ pipeline {
         //     mail to: "${MAIL_TO}", subject: 'The Pipeline success:'
         // }
         success {
-                        //cest = TimeZone.getTimeZone("CEST")
+                        // cest = TimeZone.getTimeZone("CEST")
                         emailext body: '''${SCRIPT, template="email-html.template"}''',
                         //emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
                         mimeType: 'text/html',
